@@ -34,6 +34,7 @@ def main():
         if data == pre_data:
             time.sleep(0.01)
             continue
+        print(data.decode('utf-8'))
         pre_data = data
         start = time.time()
         action = search.get_action(resp.text.encode('utf-8'))
