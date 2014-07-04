@@ -3,6 +3,7 @@
 __author__ = 'chenfengyuan'
 import cffi
 import sys
+import os
 import requests
 import time
 
@@ -15,7 +16,10 @@ class Search():
         ffi.cdef("void free_cache(void *);")
         ffi.cdef("char const * search(void *, char *);")
         self.ffi = ffi
-        self.atc_bot = ffi.dlopen('./libatc-bot-py.dylib')
+        if os.uname()[0] == 'Darwin':
+            self.atc_bot = ffi.dlopen('./libatc-bot-py.dylib')
+        else:
+            self.atc_bot = ffi.dlopen('./libatc-bot-py.so')
         self.cache = self.atc_bot.make_cache()
 
     def get_action(self, data):
