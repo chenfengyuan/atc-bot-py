@@ -2,6 +2,7 @@
 # coding=utf-8
 __author__ = 'chenfengyuan'
 import cffi
+import sys
 import requests
 import time
 
@@ -26,10 +27,14 @@ class Search():
 
 
 def main():
+    if len(sys.argv) > 1:
+        url = sys.argv[1]
+    else:
+        url = 'http://127.0.0.1:14200'
     search = Search()
     pre_data = ''
     while True:
-        resp = requests.get('http://10.211.55.17:14200')
+        resp = requests.get(url)
         data = resp.text.encode('utf-8')
         if data == pre_data:
             time.sleep(0.01)
@@ -39,7 +44,7 @@ def main():
         start = time.time()
         action = search.get_action(resp.text.encode('utf-8'))
         print('%s %s' % (time.time() - start, action))
-        requests.post('http://10.211.55.17:14200', data=action)
+        requests.post(url, data=action)
 
 
 if __name__ == '__main__':
