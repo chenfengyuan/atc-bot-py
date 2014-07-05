@@ -46,7 +46,10 @@ def main():
         print(data.decode('utf-8'))
         pre_data = data
         start = time.time()
-        action = search.get_action(resp.text.encode('utf-8'))
+        if resp.text != '{"data": ""}':
+            action = search.get_action(resp.text.encode('utf-8'))
+        else:
+            action = ''
         print('%s %s' % (time.time() - start, action))
         requests.post(url, data=action)
 
