@@ -41,7 +41,7 @@ def main():
         resp = requests.get(url)
         data = resp.text.encode('utf-8')
         if data == pre_data:
-            time.sleep(0.01)
+            time.sleep(0.1)
             continue
         print(data.decode('utf-8'))
         pre_data = data

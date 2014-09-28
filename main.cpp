@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <string>
+#include <unordered_set>
 struct cache{
     std::string rv;
     atc_search::search_result search_result;
@@ -25,14 +26,17 @@ char const * search(void * cache_void, char * data){
     std::ostringstream out;
     atc_utils::frame fm = atc_utils::read_status(data);
     std::vector<int> planes_has_path;
+    std::unordered_set<int> planes_has_nopath;
     for(auto const & pair : fm.map.get_planes()){
         auto const & plane = pair.second;
         if(cache_.search_result[plane.get_no()][fm.clck].pos == plane.get_position())
             planes_has_path.push_back(plane.get_no());
         else{
+            if(plane.get_altitude() > 0)
+                planes_has_nopath.insert(plane.get_no());
             std::cout << pair.first << "\n";
             std::cout << cache_.search_result[plane.get_no()][fm.clck].pos << "\n";
-            std::cout << plane.get_position() << "\n";
+            std::cout << plane.get_position() << ',' << plane.get_altitude() << "\n";
             cache_.search_result.erase(plane.get_no());
         }
     }
@@ -44,8 +48,16 @@ char const * search(void * cache_void, char * data){
         }
     }
     for(auto & pair : atc_search::search(fm)){
+        planes_has_nopath.erase(pair.first);
         cache_.search_result[pair.first] = std::move(pair.second);
     }
+    if(planes_has_nopath.size()){
+        std::cout << "planes_has_no_path\n";
+        for(int i : planes_has_nopath){
+            std::cout << i << "\n";
+        }
+    }
+    assert(planes_has_nopath.size() == 0);
     std::vector<int> planes_not_exists;
     for(auto & pair : cache_.search_result){
         char plane_no = static_cast<char>(pair.first - 0 + 'a');
